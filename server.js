@@ -1,0 +1,67 @@
+import express from "express";
+import cors from "cors";
+import pool from "./db.js";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+try {
+  pool.query(`
+       CREATE TABLE IF NOT EXISTS users(
+            id SERIAL PRIMARY KEY,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+       ); 
+    `);
+} catch (error) {
+  console.log("Error at pool query: " + error);
+}
+
+app.get("/", (request, response) => {
+  response.send("Hello, world");
+});
+
+app.post("/register", async (request, response) => {
+  const { username, password } = request.body;
+
+  try {
+    const userExist = await pool.query(
+      "SELECT * FROM users WHERE username = $1",
+      [username]
+    );
+    if (userExist.rows.length > 0) {
+      return response.status(400).send("Username already exists");
+    } else {
+      await pool.query(
+        "INSERT INTO users (username, password) VALUES ($1, $2)",
+        [username, password]
+      );
+
+      response.status(201).send("Register successful");
+    }
+  } catch (error) {
+    console.log("Error at registration: " + error);
+    response.status(500).send("Error at registration");
+  }
+});
+
+app.post("/login", async (request, response) => {
+  const { username, password } = request.body;
+
+  const userExist = await pool.query(
+    "SELECT * FROM users WHERE username = $1",
+    [username]
+  );
+  if (userExist.rows.length > 0) {
+    if (password === userExist.rows[0].password) {
+      return response.status(201).send("Login successful");
+    } else {
+      return response.send("Wrong password daw");
+    }
+  } else {
+    return response.status(400).send("Invalid username or password");
+  }
+});
+
+app.listen(3000);
