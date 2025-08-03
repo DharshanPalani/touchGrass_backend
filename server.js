@@ -1,10 +1,16 @@
 import express from "express";
 import cors from "cors";
 import pool from "./db.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import authenticateToken from "./authenticateToken.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+dotenv.config();
 
 try {
   pool.query(`
@@ -55,6 +61,14 @@ app.post("/login", async (request, response) => {
   );
   if (userExist.rows.length > 0) {
     if (password === userExist.rows[0].password) {
+      const token = jwt.sign(
+        { id: userExist.rows[0].id, username: userExist.rows[0].username },
+        process.env.JWT_SECRET,
+        { expiresIn: "10m" }
+      );
+
+      response.cookie("token", token, { httpOnly: true, secure: false });
+
       return response.status(201).send("Login successful");
     } else {
       return response.send("Wrong password daw");
@@ -62,6 +76,10 @@ app.post("/login", async (request, response) => {
   } else {
     return response.status(400).send("Invalid username or password");
   }
+});
+
+app.post("/me", authenticateToken, (request, response) => {
+  response.json({ user: request.user });
 });
 
 app.listen(3000);
