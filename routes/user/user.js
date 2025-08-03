@@ -15,7 +15,11 @@ userRouter.get("/:username", authenticateToken, async (request, response) => {
 
   if (userProfileExist.rows.length > 0) {
     if (userProfileExist.rows[0].username === user.username) {
-      return response.send("Daw it's you! touch grass GET OU-");
+      const userData = {
+        username: userProfileExist.rows[0].username,
+        canEdit: true,
+      };
+      return response.status(201).json(userData);
     }
     // response.send(
     //   userProfileExist.rows[0].username + " exists, this is their profile btw!"
@@ -23,9 +27,10 @@ userRouter.get("/:username", authenticateToken, async (request, response) => {
 
     const userData = {
       username: userProfileExist.rows[0].username,
+      canEdit: false,
     };
 
-    response.json({ userData });
+    response.status(201).json(userData);
   } else {
     response.send("No person like that exist! Touch some grass GET OU-");
   }
