@@ -4,6 +4,7 @@ import pool from "./db.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth/auth.js";
+import userRouter from "./routes/user/user.js";
 
 dotenv.config();
 
@@ -16,7 +17,9 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
 app.use("/", authRouter);
+app.use("/user", userRouter);
 
 try {
   pool.query(`
