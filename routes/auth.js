@@ -1,6 +1,7 @@
 import express from "express";
 import pool from "../db.js";
 import jwt from "jsonwebtoken";
+import authenticateToken from "../authenticateToken.js";
 
 const authRouter = express.Router();
 
@@ -61,6 +62,10 @@ authRouter.post("/logout", async (request, response) => {
     sameSite: "lax",
   });
   response.sendStatus(200);
+});
+
+authRouter.get("/me", authenticateToken, async (request, response) => {
+  response.json({ user: request.user });
 });
 
 export default authRouter;
