@@ -17,9 +17,15 @@ userRouter.get("/:username", authenticateToken, async (request, response) => {
     if (userProfileExist.rows[0].username === user.username) {
       return response.send("Daw it's you! touch grass GET OU-");
     }
-    response.send(
-      userProfileExist.rows[0].username + " exists, this is their profile btw!"
-    );
+    // response.send(
+    //   userProfileExist.rows[0].username + " exists, this is their profile btw!"
+    // );
+
+    const userData = {
+      username: userProfileExist.rows[0].username,
+    };
+
+    response.json({ userData });
   } else {
     response.send("No person like that exist! Touch some grass GET OU-");
   }
