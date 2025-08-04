@@ -29,6 +29,11 @@ try {
             password TEXT NOT NULL
        ); 
     `);
+  pool.query(`
+      CREATE TABLE IF NOT EXISTS profiles(
+        id INT REFERENCES users(id) ON DELETE CASCADE,
+        bio TEXT
+      )`);
 } catch (error) {
   console.log("Error at pool query: " + error);
 }

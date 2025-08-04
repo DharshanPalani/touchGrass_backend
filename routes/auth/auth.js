@@ -16,10 +16,15 @@ authRouter.post("/register", async (request, response) => {
     if (userExist.rows.length > 0) {
       return response.status(400).send("Username already exists");
     } else {
-      await pool.query(
-        "INSERT INTO users (username, password) VALUES ($1, $2)",
+      const registerUserData = await pool.query(
+        "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
         [username, password]
       );
+
+      await pool.query("INSERT INTO profiles (id, bio) VALUES ($1, $2)", [
+        registerUserData.rows[0].id,
+        "Welcome user!",
+      ]);
 
       response.status(201).send("Register successful");
     }

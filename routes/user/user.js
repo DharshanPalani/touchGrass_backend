@@ -14,19 +14,23 @@ userRouter.get("/:username", authenticateToken, async (request, response) => {
   );
 
   if (userProfileExist.rows.length > 0) {
+    const profileData = await pool.query(
+      `
+      SELECT * FROM profiles WHERE id = $1`,
+      [userProfileExist.rows[0].id]
+    );
     if (userProfileExist.rows[0].username === user.username) {
       const userData = {
         username: userProfileExist.rows[0].username,
+        bio: profileData.rows[0].bio,
         canEdit: true,
       };
       return response.status(201).json(userData);
     }
-    // response.send(
-    //   userProfileExist.rows[0].username + " exists, this is their profile btw!"
-    // );
 
     const userData = {
       username: userProfileExist.rows[0].username,
+      bio: profileData.rows[0].bio,
       canEdit: false,
     };
 
