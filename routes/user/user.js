@@ -14,24 +14,20 @@ userRouter.get("/:username", authenticateToken, async (request, response) => {
   );
 
   if (userProfileExist.rows.length > 0) {
+    var canEdit = false;
     const profileData = await pool.query(
       `
       SELECT * FROM profiles WHERE id = $1`,
       [userProfileExist.rows[0].id]
     );
     if (userProfileExist.rows[0].username === user.username) {
-      const userData = {
-        username: userProfileExist.rows[0].username,
-        bio: profileData.rows[0].bio,
-        canEdit: true,
-      };
-      return response.status(201).json(userData);
+      canEdit = true;
     }
 
     const userData = {
       username: userProfileExist.rows[0].username,
       bio: profileData.rows[0].bio,
-      canEdit: false,
+      canEdit: canEdit,
     };
 
     response.status(201).json(userData);
