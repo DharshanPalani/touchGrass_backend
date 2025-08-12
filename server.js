@@ -34,6 +34,14 @@ try {
         id INT REFERENCES users(id) ON DELETE CASCADE,
         bio TEXT
       )`);
+  // pool.query(`
+  //   ALTER TABLE profiles ADD COLUMN first_name VARCHAR(100);
+  // ALTER TABLE profiles ADD COLUMN last_name VARCHAR(100);
+  // ALTER TABLE profiles ADD COLUMN age INT;
+  // ALTER TABLE profiles ADD COLUMN course VARCHAR(255);
+  // ALTER TABLE profiles ADD COLUMN interested_in VARCHAR(255);
+  // ALTER TABLE profiles ADD COLUMN relationship_status VARCHAR(50);
+  //   `);
 } catch (error) {
   console.log("Error at pool query: " + error);
 }

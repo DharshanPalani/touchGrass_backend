@@ -36,4 +36,44 @@ userRouter.get("/:username", authenticateToken, async (request, response) => {
   }
 });
 
+userRouter.post(
+  "/profile/update",
+  authenticateToken,
+  async (request, response) => {
+    const user = request.user;
+    const { firstName, lastName, age, course, interested, relationship, bio } =
+      request.body;
+
+    try {
+      const query = `
+        UPDATE profiles
+        SET first_name = $1,
+        last_name = $2,
+        age = $3,
+        course = $4,
+        interested_in = $5,
+        relationship_status = $6,
+        bio = $7
+        WHERE id = $8
+        `;
+
+      const values = [
+        firstName,
+        lastName,
+        age,
+        course,
+        interested,
+        relationship,
+        bio,
+        user.id,
+      ];
+
+      const result = await pool.query(query, values);
+      response.status(201).send(result);
+    } catch (error) {
+      response.status(404).send("Error dawwawdihabgfuh");
+    }
+  }
+);
+
 export default userRouter;
