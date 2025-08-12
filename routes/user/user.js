@@ -26,6 +26,12 @@ userRouter.get("/:username", authenticateToken, async (request, response) => {
 
     const userData = {
       username: userProfileExist.rows[0].username,
+      firstName: profileData.rows[0].first_name,
+      lastName: profileData.rows[0].last_name,
+      age: profileData.rows[0].age,
+      course: profileData.rows[0].course,
+      interested: profileData.rows[0].interested_in,
+      relationship: profileData.rows[0].relationship_status,
       bio: profileData.rows[0].bio,
       canEdit: canEdit,
     };
